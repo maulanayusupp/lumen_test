@@ -16,4 +16,9 @@ class Checklist extends Model
 
     use SoftDeletes;
     protected $dates =['deleted_at'];
+
+    // Belongs to template
+    public function template() {
+    	return $this->belongsTo(Template::class, 'template_id');
+    }
 }

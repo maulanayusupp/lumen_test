@@ -16,4 +16,14 @@ class Template extends Model
 
     use SoftDeletes;
     protected $dates =['deleted_at'];
+
+    // Has many item
+	public function items() {
+    	return $this->hasMany(Item::class, 'template_id');
+    }
+
+    // Has many checklist
+	public function checklists() {
+    	return $this->hasMany(Checklist::class, 'template_id');
+	}
 }

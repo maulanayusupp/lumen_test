@@ -74,6 +74,7 @@ class UserController extends Controller
         if ($is_active) $user->is_active = $is_active_value;
         $user->save();
 
+        $user = User::where('id', $user->id)->first();
         $response['message'] = 'New data created';
         $response['data'] = $user;
         return response()->json($response, 200);

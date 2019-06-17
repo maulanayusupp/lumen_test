@@ -47,7 +47,6 @@ class ChecklistController extends Controller
 		$object_id = $request->has('object_id') ? trim($request->input('object_id')) : false;
 		$description = $request->has('description') ? trim($request->input('description')) : false;
         $completed_at = $request->has('completed_at') ? trim($request->input('completed_at')) : false;
-        $updated_by = $request->has('updated_by') ? trim($request->input('updated_by')) : false;
         $due = $request->has('due') ? trim($request->input('due')) : false;
         $urgency = $request->has('urgency') ? trim($request->input('urgency')) : false;
 
@@ -63,12 +62,12 @@ class ChecklistController extends Controller
         if ($object_id) $checklist->object_id = $object_id;
         if ($description) $checklist->description = $description;
         if ($completed_at) $checklist->completed_at = $completed_at;
-        if ($updated_by) $checklist->updated_by = $updated_by;
         if ($due) $checklist->due = $due;
         if ($urgency) $checklist->urgency = $urgency;
         if ($is_completed) $checklist->is_completed = $is_completed_value;
         $checklist->save();
 
+        $checklist = Checklist::where('id', $checklist->id)->first();
         $response['message'] = 'New data created';
         $response['data'] = $checklist;
         return response()->json($response, 200);

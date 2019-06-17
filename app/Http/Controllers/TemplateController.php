@@ -21,6 +21,8 @@ class TemplateController extends Controller
             ->where(function ($src) use ($filter, $keyword) {
                 $src->where('name', $filter, '%'.$keyword.'%');
             })
+            ->with('checklists')
+            ->with('items')
             ->paginate($pageLimit);
 
         $response['data'] = $templates;
@@ -43,6 +45,10 @@ class TemplateController extends Controller
         if ($name) $template->name = $name;
         $template->save();
 
+        $template = Template::where('id', $template->id)
+            ->with('checklists')
+            ->with('items')
+            ->first();
         $response['message'] = 'New data created';
         $response['data'] = $template;
         return response()->json($response, 200);
@@ -54,7 +60,10 @@ class TemplateController extends Controller
      * @return response
      */
     public function show($id) {
-        $template = Template::find($id);
+        $template = Template::where('id', $id)
+            ->with('checklists')
+            ->with('items')
+            ->first();
 		if (!isset($template)) {
             $response['message'] = 'Cannot find the data';
 			return response()->json($response, 422);
