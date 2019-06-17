@@ -67,6 +67,7 @@ class ChecklistController extends Controller
             'object_domain' => 'required',
             'object_id' => 'required',
             'description' => 'required',
+            'due' => 'date_format:Y-m-d H:i:s',
         ]);
 
 		$template_id = $request->has('template_id') ? trim($request->input('template_id')) : false;
@@ -136,6 +137,7 @@ class ChecklistController extends Controller
             'object_domain' => 'required',
             'object_id' => 'required',
             'description' => 'required',
+            'due' => 'date_format:Y-m-d H:i:s',
         ]);
 
         $user = Auth::user();
