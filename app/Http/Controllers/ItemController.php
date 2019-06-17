@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Item;
+use App\Checklist;
 use Auth;
+use Carbon\Carbon;
 
 class ItemController extends Controller
 {
@@ -238,5 +240,108 @@ class ItemController extends Controller
 			$response['message'] = 'No data deleted';
 			return response()->json($response, 200);
 		}
-	}
+    }
+
+    /**
+     * Bulk Complete Item(s)
+     *
+     * @param Request $request
+     * @return array|Response
+     */
+    public function complete(Request $request)
+    {
+        $this->validate($request, [
+            'item_ids' => 'required',
+        ]);
+
+        // Get user
+        $user = Auth::user();
+        $updated_by = $user->name;
+
+        // Get current time now
+        $now = Carbon::now()->toDateTimeString();
+
+		$item_ids = gettype($request->input('item_ids')) === 'string' ? json_decode($request->input('item_ids')) : $request->input('item_ids');
+        $completed_at = $now;
+
+        if (count($item_ids) > 0) {
+			$items = Item::whereIn('id', $item_ids)->get();
+			foreach($items as $item) {
+                if ($completed_at) $item->completed_at = $completed_at;
+                if ($updated_by) $item->updated_by = $updated_by;
+                $item->is_completed = 1;
+				$item->save();
+            }
+            $items = Item::whereIn('id', $item_ids)->get();
+			$response['message'] = count($items) . ' Data changed to completed';
+			$response['data'] = $items;
+			return response()->json($response, 200);
+		} else {
+			$response['message'] = 'No data updated';
+			return response()->json($response, 200);
+		}
+    }
+
+    /**
+     * Bulk Incomplete Item(s)
+     *
+     * @param Request $request
+     * @return array|Response
+     */
+    public function incomplete(Request $request)
+    {
+        $this->validate($request, [
+            'item_ids' => 'required',
+        ]);
+
+        // Get user
+        $user = Auth::user();
+        $updated_by = $user->name;
+
+        // Get current time now
+        $now = Carbon::now()->toDateTimeString();
+
+		$item_ids = gettype($request->input('item_ids')) === 'string' ? json_decode($request->input('item_ids')) : $request->input('item_ids');
+        $completed_at = $now;
+
+        if (count($item_ids) > 0) {
+			$items = Item::whereIn('id', $item_ids)->get();
+			foreach($items as $item) {
+                if ($completed_at) $item->completed_at = $completed_at;
+                if ($updated_by) $item->updated_by = $updated_by;
+                $item->is_completed = 0;
+				$item->save();
+            }
+            $items = Item::whereIn('id', $item_ids)->get();
+			$response['message'] = count($items) . ' Data changed to incomplete';
+			$response['data'] = $items;
+			return response()->json($response, 200);
+		} else {
+			$response['message'] = 'No data updated';
+			return response()->json($response, 200);
+		}
+    }
+
+    /**
+     * Summaries
+     *
+     * @return response
+     */
+    public function summaries(Request $request) {
+
+        // Get current time now
+        $now = Carbon::now()->toDateTimeString();
+
+        $total = Item::count();
+        return $total;
+
+        $response['today'] = $today;
+        $response['past_due'] = $past_due;
+        $response['this_week'] = $this_week;
+        $response['past_week'] = $past_week;
+        $response['this_month'] = $this_month;
+        $response['past_month'] = $past_month;
+        $response['total'] = $total;
+        return response()->json($response, 200);
+    }
 }

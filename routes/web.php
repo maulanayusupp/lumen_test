@@ -49,6 +49,7 @@ $router->group(['middleware' => 'auth'], function () use ($router) {
 
     // Checklists
     $router->get('checklists', 'ChecklistController@list');
+    $router->get('checklists/{checklist_id}/items', 'ChecklistController@listByChecklistId');
     $router->post('checklists', 'ChecklistController@store');
     $router->get('checklists/{id}/show', 'ChecklistController@show');
     $router->patch('checklists/{id}/update', 'ChecklistController@update');
@@ -64,5 +65,8 @@ $router->group(['middleware' => 'auth'], function () use ($router) {
     $router->delete('items/{id}/delete', 'ItemController@delete');
     $router->delete('items/bulk_delete', 'ItemController@bulkDelete');
     $router->post('items/bulk_update', 'ItemController@bulkUpdate');
+    $router->post('items/complete', 'ItemController@complete');
+    $router->post('items/incomplete', 'ItemController@incomplete');
+    $router->get('items/summaries', 'ItemController@summaries');
 });
 

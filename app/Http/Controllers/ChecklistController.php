@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Checklist;
+use App\Item;
 use Auth;
 
 class ChecklistController extends Controller
@@ -26,6 +27,29 @@ class ChecklistController extends Controller
             ->paginate($pageLimit);
 
         $response['data'] = $checklists;
+        return response()->json($response, 200);
+    }
+
+    /**
+     * List all item by checklist_id
+     *
+     * @return response
+     */
+    public function listByChecklistId(Request $request, $checklist_id) {
+        $filter = $request->has('filter') ? $request->input('filter') : 'like';
+        $sort = $request->has('sort') ? $request->input('sort') : 'asc';
+        $keyword = $request->input('keyword');
+        $pageLimit = $request->input('page_limit');
+
+        $items = Item::where('checklist_id', $checklist_id)
+            ->orderBy('created_at', $sort)
+            ->where(function ($src) use ($filter, $keyword) {
+                $src->where('description', $filter, '%'.$keyword.'%')
+                    ->orWhere('due', $filter, '%'.$keyword.'%');
+            })
+            ->paginate($pageLimit);
+
+        $response['data'] = $items;
         return response()->json($response, 200);
     }
 
