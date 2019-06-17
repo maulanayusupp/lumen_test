@@ -332,9 +332,30 @@ class ItemController extends Controller
         // Get current time now
         $now = Carbon::now()->toDateTimeString();
 
-        $total = Item::count();
-        return $total;
+        // Due
+        $past_due = Item::where('due', '>=', $now)->count();
 
+        // Week
+        $pastWeek = Carbon::today()->subDays(7)->toDateTimeString();
+        $startWeek = Carbon::now()->startOfWeek()->toDateTimeString();
+        $endWeek = Carbon::now()->endOfWeek()->toDateTimeString();
+        $this_week = Item::where('created_at', [$startWeek, $endWeek])->count();
+        $past_week = Item::where('created_at', '>=', $pastWeek)->count();
+
+        // Month
+        $pastMonth = Carbon::today()->subDays(30)->toDateTimeString();
+        $startMonth = Carbon::now()->startOfMonth()->toDateTimeString();
+        $endMonth = Carbon::now()->endOfMonth()->toDateTimeString();
+        $this_month = Item::where('created_at', [$startMonth, $endMonth])->count();
+        $past_month = Item::where('created_at', '>=', $pastMonth)->count();
+
+        // Today
+        $today = Item::where('created_at', '>=', $now)->count();
+
+        // Total
+        $total = Item::count();
+
+        // Response
         $response['today'] = $today;
         $response['past_due'] = $past_due;
         $response['this_week'] = $this_week;
@@ -342,6 +363,7 @@ class ItemController extends Controller
         $response['this_month'] = $this_month;
         $response['past_month'] = $past_month;
         $response['total'] = $total;
+
         return response()->json($response, 200);
     }
 }
