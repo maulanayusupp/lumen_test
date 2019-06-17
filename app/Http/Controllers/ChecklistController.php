@@ -31,11 +31,11 @@ class ChecklistController extends Controller
     }
 
     /**
-     * List all item by checklist_id
+     * List all item by checklist
      *
      * @return response
      */
-    public function listByChecklistId(Request $request, $checklist_id) {
+    public function listByChecklist(Request $request, $checklist_id) {
         $filter = $request->has('filter') ? $request->input('filter') : 'like';
         $sort = $request->has('sort') ? $request->input('sort') : 'asc';
         $keyword = $request->input('keyword');
@@ -254,6 +254,24 @@ class ChecklistController extends Controller
         $checklist_ids = gettype($request->input('checklist_ids')) === 'string' ? json_decode($request->input('checklist_ids')) : $request->input('checklist_ids');
 		if (count($checklist_ids) > 0) {
             $checklists = Checklist::whereIn('id', $checklist_ids)->delete();
+            $response['message'] = $checklists . ' Data deleted';
+			return response()->json($response, 200);
+		} else {
+			$response['message'] = 'No data deleted';
+			return response()->json($response, 200);
+		}
+	}
+
+    /**
+     * Delete by template
+     *
+     * @param Request $request
+     * @return array|Response
+     */
+    public function deleteByTemplate($template_id)
+    {
+        $checklists = Checklist::where('template_id', $template_id)->delete();
+		if ($checklists > 0) {
             $response['message'] = $checklists . ' Data deleted';
 			return response()->json($response, 200);
 		} else {
