@@ -339,15 +339,15 @@ class ItemController extends Controller
         $pastWeek = Carbon::today()->subDays(7)->toDateTimeString();
         $startWeek = Carbon::now()->startOfWeek()->toDateTimeString();
         $endWeek = Carbon::now()->endOfWeek()->toDateTimeString();
-        $this_week = Item::where('created_at', [$startWeek, $endWeek])->count();
-        $past_week = Item::where('created_at', '>=', $pastWeek)->count();
+        $this_week = Item::whereBetween('created_at', [$startWeek, $endWeek])->count();
+        $past_week = Item::whereBetween('created_at', [$pastWeek, $startWeek])->count();
 
         // Month
         $pastMonth = Carbon::today()->subDays(30)->toDateTimeString();
         $startMonth = Carbon::now()->startOfMonth()->toDateTimeString();
         $endMonth = Carbon::now()->endOfMonth()->toDateTimeString();
-        $this_month = Item::where('created_at', [$startMonth, $endMonth])->count();
-        $past_month = Item::where('created_at', '>=', $pastMonth)->count();
+        $this_month = Item::whereBetween('created_at', [$startMonth, $endMonth])->count();
+        $past_month = Item::whereBetween('created_at', [$pastMonth, $startMonth])->count();
 
         // Today
         $today = Item::where('created_at', '>=', $now)->count();
