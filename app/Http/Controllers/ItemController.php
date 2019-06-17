@@ -143,6 +143,9 @@ class ItemController extends Controller
             if ($is_completed) $item->is_completed = $is_completed_value;
             $item->save();
 
+            // Checklist Check
+            self::checklistCheck($item->checklist_id);
+
             // Create Log
             $logParams['loggable_type'] = 'items';
             $logParams['loggable_id'] = null;
@@ -225,6 +228,9 @@ class ItemController extends Controller
                 if ($is_completed) $item->is_completed = $is_completed_value;
                 $item->save();
 
+                // Checklist Check
+                self::checklistCheck($item->checklist_id);
+
                 // Create Log
                 $logParams['loggable_type'] = 'items';
                 $logParams['loggable_id'] = null;
@@ -293,8 +299,12 @@ class ItemController extends Controller
                 if ($completed_at) $item->completed_at = $completed_at;
                 if ($updated_by) $item->updated_by = $updated_by;
                 $item->is_completed = 1;
-				$item->save();
+                $item->save();
+
+                // Checklist Check
+                self::checklistCheck($item->checklist_id);
             }
+
             $items = Item::whereIn('id', $item_ids)->get();
 			$response['message'] = count($items) . ' Data changed to completed';
 			$response['data'] = $items;
@@ -303,6 +313,29 @@ class ItemController extends Controller
 			$response['message'] = 'No data updated';
 			return response()->json($response, 200);
 		}
+    }
+
+    /**
+     * Checklist Check
+     *
+     * @return $items
+     */
+	public function checklistCheck($checklist_id)
+	{
+        $items = Item::where('checklist_id', $checklist_id)->get();
+        $checklist = Checklist::where('id', $checklist_id)->first();
+        if ($checklist) {
+            $isCompleted = 1;
+            foreach($items as $item) {
+                if (!$item->is_completed) {
+                    $isCompleted = 0;
+                    break;
+                }
+            }
+            $checklist->is_completed = $isCompleted;
+            $checklist->save();
+        }
+		return $items;
     }
 
     /**
@@ -333,7 +366,10 @@ class ItemController extends Controller
                 if ($completed_at) $item->completed_at = $completed_at;
                 if ($updated_by) $item->updated_by = $updated_by;
                 $item->is_completed = 0;
-				$item->save();
+                $item->save();
+
+                // Checklist Check
+                self::checklistCheck($item->checklist_id);
             }
             $items = Item::whereIn('id', $item_ids)->get();
 			$response['message'] = count($items) . ' Data changed to incomplete';

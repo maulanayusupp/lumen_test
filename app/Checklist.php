@@ -21,4 +21,9 @@ class Checklist extends Model
     public function template() {
     	return $this->belongsTo(Template::class, 'template_id');
     }
+
+    // Has many items
+	public function items() {
+    	return $this->hasMany(Item::class, 'checklist_id');
+	}
 }

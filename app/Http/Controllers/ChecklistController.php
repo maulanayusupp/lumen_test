@@ -25,6 +25,7 @@ class ChecklistController extends Controller
                 $src->where('description', $filter, '%'.$keyword.'%')
                     ->orWhere('due', $filter, '%'.$keyword.'%');
             })
+            ->with('items')
             ->paginate($pageLimit);
 
         $response['data'] = $checklists;
@@ -48,6 +49,7 @@ class ChecklistController extends Controller
                 $src->where('description', $filter, '%'.$keyword.'%')
                     ->orWhere('due', $filter, '%'.$keyword.'%');
             })
+            ->with('items')
             ->paginate($pageLimit);
 
         $response['data'] = $items;
@@ -99,7 +101,9 @@ class ChecklistController extends Controller
         $logParams['value'] = $description . ' Data created';
         $log = HistoryLibrary::createLog($logParams);
 
-        $checklist = Checklist::where('id', $checklist->id)->first();
+        $checklist = Checklist::where('id', $checklist->id)
+            ->with('items')
+            ->first();
         $response['message'] = 'New data created';
         $response['data'] = $checklist;
         return response()->json($response, 200);
@@ -111,7 +115,7 @@ class ChecklistController extends Controller
      * @return response
      */
     public function show($id) {
-        $checklist = Checklist::find($id);
+        $checklist = Checklist::where('id', $id)->with('items')->first();
 		if (!isset($checklist)) {
             $response['message'] = 'Cannot find the data';
 			return response()->json($response, 422);
@@ -163,6 +167,7 @@ class ChecklistController extends Controller
             if ($urgency) $checklist->urgency = $urgency;
             if ($is_completed) $checklist->is_completed = $is_completed_value;
             $checklist->save();
+            $checklist = Checklist::where('id', $id)->with('items')->first();
 
             // Create Log
             $logParams['loggable_type'] = 'checklists';
@@ -347,7 +352,9 @@ class ChecklistController extends Controller
                 $log = HistoryLibrary::createLog($logParams);
             }
 
-            $checklists = Checklist::where('template_id', $template_id)->get();
+            $checklists = Checklist::where('template_id', $template_id)
+                ->with('items')
+                ->get();
 			$response['message'] = count($checklists) . ' Data assigned';
 			$response['data'] = $checklists;
 			return response()->json($response, 200);
