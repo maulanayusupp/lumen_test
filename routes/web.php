@@ -37,5 +37,32 @@ $router->group(['middleware' => 'auth'], function () use ($router) {
     $router->delete('users/{id}/delete', 'UserController@delete');
     $router->delete('users/bulk_delete', 'UserController@bulkDelete');
     $router->post('users/bulk_update', 'UserController@bulkUpdate');
+
+    // Templates
+    $router->get('templates', 'TemplateController@list');
+    $router->post('templates', 'TemplateController@store');
+    $router->get('templates/{id}/show', 'TemplateController@show');
+    $router->patch('templates/{id}/update', 'TemplateController@update');
+    $router->delete('templates/{id}/delete', 'TemplateController@delete');
+    $router->delete('templates/bulk_delete', 'TemplateController@bulkDelete');
+    $router->post('templates/bulk_update', 'TemplateController@bulkUpdate');
+
+    // Checklists
+    $router->get('checklists', 'ChecklistController@list');
+    $router->post('checklists', 'ChecklistController@store');
+    $router->get('checklists/{id}/show', 'ChecklistController@show');
+    $router->patch('checklists/{id}/update', 'ChecklistController@update');
+    $router->delete('checklists/{id}/delete', 'ChecklistController@delete');
+    $router->delete('checklists/bulk_delete', 'ChecklistController@bulkDelete');
+    $router->post('checklists/bulk_update', 'ChecklistController@bulkUpdate');
+
+    // Items
+    $router->get('items', 'ItemController@list');
+    $router->post('items', 'ItemController@store');
+    $router->get('items/{id}/show', 'ItemController@show');
+    $router->patch('items/{id}/update', 'ItemController@update');
+    $router->delete('items/{id}/delete', 'ItemController@delete');
+    $router->delete('items/bulk_delete', 'ItemController@bulkDelete');
+    $router->post('items/bulk_update', 'ItemController@bulkUpdate');
 });
 

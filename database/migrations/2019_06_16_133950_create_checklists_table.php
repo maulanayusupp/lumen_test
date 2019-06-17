@@ -15,10 +15,10 @@ class CreateChecklistsTable extends Migration
     {
         Schema::create('checklists', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->integer('template_id')->nullable();
-            $table->string('object_domain');
-            $table->string('object_id');
-            $table->string('description');
+            $table->integer('template_id')->nullable(); // required
+            $table->string('object_domain'); // required
+            $table->string('object_id'); // required
+            $table->string('description'); // required
             $table->boolean('is_completed')->nullable()->default(false);
             $table->string('completed_at')->nullable();
             $table->string('updated_by')->nullable();

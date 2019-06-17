@@ -87,7 +87,7 @@ class UserController extends Controller
     public function show($id) {
         $user = User::find($id);
 		if (!isset($user)) {
-            $response['message'] = 'Cannot find user';
+            $response['message'] = 'Cannot find the data';
 			return response()->json($response, 422);
 		}
 
@@ -138,10 +138,10 @@ class UserController extends Controller
 
             $response['message'] = 'Data updated';
             $response['data'] = $user;
-            return response()->json($response, 400);
+            return response()->json($response, 200);
 
         } else {
-            $response['message'] = 'Cant find user';
+            $response['message'] = 'Cant find the data';
             return response()->json($response, 400);
         }
     }
@@ -160,7 +160,7 @@ class UserController extends Controller
 			$response['data'] = $user;
 			return response()->json($response, 200);
 		} else {
-			$response['message'] = 'Cant find user';
+			$response['message'] = 'Cant find the data';
             return response()->json($response, 400);
 		}
 		return $user;
