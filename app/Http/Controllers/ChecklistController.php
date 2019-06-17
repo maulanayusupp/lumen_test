@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
+use App\Libraries\HistoryLibrary;
 use App\Checklist;
 use App\Item;
 use Auth;
@@ -91,6 +92,13 @@ class ChecklistController extends Controller
         if ($is_completed) $checklist->is_completed = $is_completed_value;
         $checklist->save();
 
+        // Create Log
+        $logParams['loggable_type'] = 'checklists';
+        $logParams['loggable_id'] = null;
+        $logParams['action'] = 'create';
+        $logParams['value'] = $description . ' Data created';
+        $log = HistoryLibrary::createLog($logParams);
+
         $checklist = Checklist::where('id', $checklist->id)->first();
         $response['message'] = 'New data created';
         $response['data'] = $checklist;
@@ -155,6 +163,13 @@ class ChecklistController extends Controller
             if ($urgency) $checklist->urgency = $urgency;
             if ($is_completed) $checklist->is_completed = $is_completed_value;
             $checklist->save();
+
+            // Create Log
+            $logParams['loggable_type'] = 'checklists';
+            $logParams['loggable_id'] = null;
+            $logParams['action'] = 'update';
+            $logParams['value'] = $description . ' Data updated';
+            $log = HistoryLibrary::createLog($logParams);
 
             $response['message'] = 'Data updated';
             $response['data'] = $checklist;
@@ -227,7 +242,14 @@ class ChecklistController extends Controller
                 if ($due) $checklist->due = $due;
                 if ($urgency) $checklist->urgency = $urgency;
                 if ($is_completed) $checklist->is_completed = $is_completed_value;
-				$checklist->save();
+                $checklist->save();
+
+                // Create Log
+                $logParams['loggable_type'] = 'checklists';
+                $logParams['loggable_id'] = null;
+                $logParams['action'] = 'update';
+                $logParams['value'] = $description . ' Data updated';
+                $log = HistoryLibrary::createLog($logParams);
             }
             $checklists = Checklist::whereIn('id', $checklist_ids)->get();
 			$response['message'] = count($checklists) . ' Data updated';

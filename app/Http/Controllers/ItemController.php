@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
+use App\Libraries\HistoryLibrary;
 use App\Item;
 use App\Checklist;
 use Auth;
@@ -69,7 +70,15 @@ class ItemController extends Controller
         if ($is_completed) $item->is_completed = $is_completed_value;
         $item->save();
 
+        // Create Log
+        $logParams['loggable_type'] = 'items';
+        $logParams['loggable_id'] = null;
+        $logParams['action'] = 'create';
+        $logParams['value'] = $description . ' Data created';
+        $log = HistoryLibrary::createLog($logParams);
+
         $item = Item::where('id', $item->id)->first();
+
         $response['message'] = 'New data created';
         $response['data'] = $item;
         return response()->json($response, 200);
@@ -133,6 +142,13 @@ class ItemController extends Controller
             if ($updated_by) $item->updated_by = $updated_by;
             if ($is_completed) $item->is_completed = $is_completed_value;
             $item->save();
+
+            // Create Log
+            $logParams['loggable_type'] = 'items';
+            $logParams['loggable_id'] = null;
+            $logParams['action'] = 'update';
+            $logParams['value'] = $description . ' Data updated';
+            $log = HistoryLibrary::createLog($logParams);
 
             $response['message'] = 'Data updated';
             $response['data'] = $item;
@@ -207,7 +223,14 @@ class ItemController extends Controller
                 if ($task_id) $item->task_id = $task_id;
                 if ($updated_by) $item->updated_by = $updated_by;
                 if ($is_completed) $item->is_completed = $is_completed_value;
-				$item->save();
+                $item->save();
+
+                // Create Log
+                $logParams['loggable_type'] = 'items';
+                $logParams['loggable_id'] = null;
+                $logParams['action'] = 'update';
+                $logParams['value'] = $description . ' Data updated';
+                $log = HistoryLibrary::createLog($logParams);
             }
             $items = Item::whereIn('id', $item_ids)->get();
 			$response['message'] = count($items) . ' Data updated';

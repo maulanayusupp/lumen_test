@@ -69,5 +69,9 @@ $router->group(['middleware' => 'auth'], function () use ($router) {
     $router->post('items/complete', 'ItemController@complete');
     $router->post('items/incomplete', 'ItemController@incomplete');
     $router->get('items/summaries', 'ItemController@summaries');
+
+    // History
+    $router->get('histories/{type}', 'HistoryController@list');
+    $router->get('histories/{id}/show', 'HistoryController@show');
 });
 
