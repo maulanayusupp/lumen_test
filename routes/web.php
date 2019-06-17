@@ -57,6 +57,7 @@ $router->group(['middleware' => 'auth'], function () use ($router) {
     $router->delete('checklists/bulk_delete', 'ChecklistController@bulkDelete');
     $router->post('checklists/bulk_update', 'ChecklistController@bulkUpdate');
     $router->delete('checklists/templates/{template_id}', 'ChecklistController@deleteByTemplate');
+    $router->post('checklists/templates/{template_id}/assigns', 'ChecklistController@assignChecklists');
 
     // Items
     $router->get('items', 'ItemController@list');
@@ -70,7 +71,7 @@ $router->group(['middleware' => 'auth'], function () use ($router) {
     $router->post('items/incomplete', 'ItemController@incomplete');
     $router->get('items/summaries', 'ItemController@summaries');
 
-    // History
+    // Histories (Log)
     $router->get('histories/{type}', 'HistoryController@list');
     $router->get('histories/{id}/show', 'HistoryController@show');
 });

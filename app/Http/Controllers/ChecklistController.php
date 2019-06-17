@@ -300,5 +300,60 @@ class ChecklistController extends Controller
 			$response['message'] = 'No data deleted';
 			return response()->json($response, 200);
 		}
+    }
+
+    /**
+     * Assign checklist by template
+     *
+     * @param Request $request
+     * @return array|Response
+     */
+    public function assignChecklists(Request $request, $template_id)
+    {
+        $user = Auth::user();
+        $updated_by = $user->name;
+
+        $checklists = Checklist::where('template_id', $template_id)->get();
+		$object_domain = $request->has('object_domain') ? trim($request->input('object_domain')) : false;
+		$object_id = $request->has('object_id') ? trim($request->input('object_id')) : false;
+		$description = $request->has('description') ? trim($request->input('description')) : false;
+        $completed_at = $request->has('completed_at') ? trim($request->input('completed_at')) : false;
+        $due = $request->has('due') ? trim($request->input('due')) : false;
+        $urgency = $request->has('urgency') ? trim($request->input('urgency')) : false;
+
+        $is_completed = false;
+        if ($request->has('is_completed')) {
+            $is_completed = true;
+            $is_completed_value = (bool) $request->input('is_completed');
+        }
+
+        if (count($checklists) > 0) {
+			foreach($checklists as $checklist) {
+                if ($object_domain) $checklist->object_domain = $object_domain;
+                if ($object_id) $checklist->object_id = $object_id;
+                if ($description) $checklist->description = $description;
+                if ($completed_at) $checklist->completed_at = $completed_at;
+                if ($updated_by) $checklist->updated_by = $updated_by;
+                if ($due) $checklist->due = $due;
+                if ($urgency) $checklist->urgency = $urgency;
+                if ($is_completed) $checklist->is_completed = $is_completed_value;
+                $checklist->save();
+
+                // Create Log
+                $logParams['loggable_type'] = 'checklists';
+                $logParams['loggable_id'] = null;
+                $logParams['action'] = 'assign';
+                $logParams['value'] = $description . ' Data assigned';
+                $log = HistoryLibrary::createLog($logParams);
+            }
+
+            $checklists = Checklist::where('template_id', $template_id)->get();
+			$response['message'] = count($checklists) . ' Data assigned';
+			$response['data'] = $checklists;
+			return response()->json($response, 200);
+		} else {
+			$response['message'] = 'No data assigned';
+			return response()->json($response, 200);
+		}
 	}
 }
