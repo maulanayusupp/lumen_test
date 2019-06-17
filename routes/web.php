@@ -24,6 +24,8 @@ $router->get('/key', function() {
 $router->group(['prefix' => 'auth'], function () use ($router) {
     // Login
     $router->post('login', 'AuthController@login');
+
+    // Get user loged
     $router->get('me', 'AuthController@me');
 });
 
