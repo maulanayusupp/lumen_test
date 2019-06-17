@@ -17,12 +17,20 @@ class HistoryController extends Controller
         $keyword = $request->input('keyword');
         $pageLimit = $request->input('page_limit');
 
-        $histories = History::where('loggable_type', $type)
-            ->where(function ($src) use ($filter, $keyword) {
-                $src->where('value', $filter, '%'.$keyword.'%');
-            })
-            ->orderBy('created_at', $sort)
-            ->paginate($pageLimit);
+        if ($type === 'all') {
+            $histories = History::where(function ($src) use ($filter, $keyword) {
+                    $src->where('value', $filter, '%'.$keyword.'%');
+                })
+                ->orderBy('created_at', $sort)
+                ->paginate($pageLimit);
+        } else {
+            $histories = History::where('loggable_type', $type)
+                ->where(function ($src) use ($filter, $keyword) {
+                    $src->where('value', $filter, '%'.$keyword.'%');
+                })
+                ->orderBy('created_at', $sort)
+                ->paginate($pageLimit);
+        }
 
         $response['data'] = $histories;
         return response()->json($response, 200);
